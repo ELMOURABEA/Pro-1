@@ -170,8 +170,31 @@ function isValidApiKey(apiKey) {
     return false;
   }
   
-  // Basic validation - API key should be a reasonable length and not empty
-  return apiKey.trim().length >= 10;
+  const trimmed = apiKey.trim();
+  
+  // More robust validation for xAI API keys
+  // Typical API key format: alphanumeric with hyphens/underscores
+  // Reasonable length range: 20-200 characters
+  if (trimmed.length < 20 || trimmed.length > 200) {
+    return false;
+  }
+  
+  // Check for valid characters (alphanumeric, hyphens, underscores)
+  const validPattern = /^[a-zA-Z0-9_-]+$/;
+  if (!validPattern.test(trimmed)) {
+    return false;
+  }
+  
+  // Prevent obviously invalid keys
+  const invalidPatterns = ['test', 'example', 'demo', 'placeholder'];
+  const lowerKey = trimmed.toLowerCase();
+  for (const pattern of invalidPatterns) {
+    if (lowerKey === pattern || lowerKey.startsWith(pattern + '-')) {
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 /**

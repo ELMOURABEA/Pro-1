@@ -227,8 +227,20 @@ Your analysis helps pharmacies improve operations, optimize inventory, and enhan
     // Create a deep copy
     const anonymized = JSON.parse(JSON.stringify(data));
 
-    // Remove or hash personally identifiable information
-    const removeFields = ['patientName', 'patientId', 'ssn', 'address', 'phone', 'email', 'doctorName', 'doctorId'];
+    // Configurable list of fields to remove (can be extended via config)
+    const defaultRemoveFields = [
+      'patientName', 'patientId', 'ssn', 'socialSecurityNumber',
+      'address', 'streetAddress', 'street', 'city', 'zipCode', 'postalCode',
+      'phone', 'phoneNumber', 'mobile', 'telephone',
+      'email', 'emailAddress',
+      'doctorName', 'doctorId', 'physicianName', 'providerId',
+      'birthDate', 'dateOfBirth', 'dob',
+      'firstName', 'lastName', 'middleName', 'fullName',
+      'insuranceId', 'memberId', 'policyNumber',
+      'medicalRecordNumber', 'mrn', 'patientNumber'
+    ];
+    
+    const removeFields = this.config?.anonymizeFields || defaultRemoveFields;
     
     const cleanObject = (obj) => {
       if (!obj || typeof obj !== 'object') return obj;
@@ -238,7 +250,9 @@ Your analysis helps pharmacies improve operations, optimize inventory, and enhan
       }
 
       Object.keys(obj).forEach(key => {
-        if (removeFields.includes(key)) {
+        const lowerKey = key.toLowerCase();
+        // Check if field name or lowercase version matches any PII field
+        if (removeFields.includes(key) || removeFields.some(f => lowerKey.includes(f.toLowerCase()))) {
           delete obj[key];
         } else if (typeof obj[key] === 'object') {
           obj[key] = cleanObject(obj[key]);

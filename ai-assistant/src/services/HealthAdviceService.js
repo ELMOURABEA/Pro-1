@@ -241,23 +241,59 @@ If you have a medical emergency, call your local emergency number immediately.
    * Check if question is appropriate for AI
    */
   isAppropriateForAI(question) {
-    // Flag questions that require immediate medical attention
-    const emergencyKeywords = [
-      'emergency', 'urgent', 'severe pain', 'chest pain', 
-      'difficulty breathing', 'unconscious', 'bleeding heavily',
-      'suicidal', 'overdose', 'poisoning'
+    // Configurable emergency keywords (should be maintained by medical professionals)
+    // Using pattern matching for better accuracy
+    const emergencyPatterns = [
+      // Critical symptoms
+      /\b(emergency|urgent|critical|life[\s-]threatening)\b/i,
+      /\b(severe|intense|unbearable|excruciating)\s+(pain|headache|discomfort)\b/i,
+      /\bchest\s+pain\b/i,
+      /\b(difficulty|trouble|can't|cannot)\s+(breath|breathing|breathe)\b/i,
+      /\b(unconscious|unresponsive|collapsed|passed\s+out)\b/i,
+      /\b(bleeding\s+heavily|severe\s+bleeding|hemorrhage)\b/i,
+      
+      // Mental health emergencies
+      /\b(suicidal|suicide|kill\s+(my)?self|end\s+(my\s+)?life)\b/i,
+      /\b(self[\s-]harm|hurt\s+(my)?self)\b/i,
+      
+      // Poisoning/overdose
+      /\b(overdose|poisoning|ingested|swallowed)\b.*\b(toxic|poison|pills|medication)\b/i,
+      
+      // Stroke symptoms
+      /\b(stroke|sudden\s+weakness|facial\s+droop|slurred\s+speech)\b/i,
+      
+      // Heart attack symptoms
+      /\b(heart\s+attack|cardiac\s+arrest)\b/i,
+      
+      // Severe allergic reactions
+      /\b(anaphylaxis|severe\s+allergic\s+reaction|throat\s+closing)\b/i,
+      
+      // High fever in children
+      /\b(infant|baby|child).*\b(high\s+fever|temperature.*10[4-9]|seizure)\b/i
     ];
 
     const lowerQuestion = question.toLowerCase();
     
-    for (const keyword of emergencyKeywords) {
-      if (lowerQuestion.includes(keyword)) {
+    for (const pattern of emergencyPatterns) {
+      if (pattern.test(question)) {
         return {
           appropriate: false,
           reason: 'This appears to be a medical emergency. Please call emergency services or seek immediate medical attention.',
           emergencyDetected: true
         };
       }
+    }
+
+    // Additional check for multiple concerning symptoms
+    const concerningSymptoms = ['pain', 'bleeding', 'fever', 'vomiting', 'dizzy', 'confused'];
+    const symptomCount = concerningSymptoms.filter(s => lowerQuestion.includes(s)).length;
+    
+    if (symptomCount >= 3) {
+      return {
+        appropriate: false,
+        reason: 'Multiple concerning symptoms detected. Please consult a healthcare provider immediately.',
+        emergencyDetected: true
+      };
     }
 
     return {

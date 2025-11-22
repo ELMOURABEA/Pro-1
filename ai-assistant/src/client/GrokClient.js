@@ -11,9 +11,14 @@ class GrokClient {
     this.maxRetries = config.maxRetries || 3;
     this.timeout = config.timeout || 30000; // 30 seconds
     this.debug = config.debug || false;
+    this.requireApiKey = config.requireApiKey !== false; // Default to true in production
 
     if (!this.apiKey) {
-      console.warn('[GrokClient] Warning: No API key provided. Set XAI_API_KEY environment variable or pass apiKey in config.');
+      const message = '[GrokClient] Warning: No API key provided. Set XAI_API_KEY environment variable or pass apiKey in config.';
+      if (this.requireApiKey && process.env.NODE_ENV === 'production') {
+        throw new Error(message);
+      }
+      console.warn(message);
     }
   }
 

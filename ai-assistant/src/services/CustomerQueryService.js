@@ -146,6 +146,22 @@ Remember: You are an informational assistant, not a replacement for professional
       throw new Error('Query is too long. Maximum length is 5000 characters');
     }
 
+    // Sanitize and check for suspicious patterns
+    const suspiciousPatterns = [
+      /<script[^>]*>.*?<\/script>/gi,  // Script tags
+      /javascript:/gi,                  // JavaScript protocol
+      /on\w+\s*=/gi,                   // Event handlers
+      /<iframe[^>]*>/gi,               // iframes
+      /eval\(/gi,                       // eval calls
+      /expression\(/gi                  // CSS expressions
+    ];
+
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(query)) {
+        throw new Error('Query contains potentially malicious content');
+      }
+    }
+
     return true;
   }
 }
