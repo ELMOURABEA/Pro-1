@@ -257,7 +257,9 @@ If you have a medical emergency, call your local emergency number immediately.
       /\b(self[\s-]harm|hurt\s+(my)?self)\b/i,
       
       // Poisoning/overdose
-      /\b(overdose|poisoning|ingested|swallowed)\b.*\b(toxic|poison|pills|medication)\b/i,
+      /\b(overdose|overdosed|took\s+too\s+many)\b/i,
+      /\b(poisoning|poisoned|ingested\s+(toxic|poison))\b/i,
+      /\bswallowed\b.*\b(toxic|poison|chemicals?)\b/i,
       
       // Stroke symptoms
       /\b(stroke|sudden\s+weakness|facial\s+droop|slurred\s+speech)\b/i,
