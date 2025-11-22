@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ads Core - Basic Integration Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    .ad-zone {
+      background: #e0e0e0;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .ad-unit {
+      width: 100%;
+    }
+    
+    .ad-banner img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    .ad-native {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .ad-native .ad-image {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+    }
+    
+    .ad-native .ad-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .ad-native .ad-description {
+      color: #666;
+      margin: 0;
+    }
+    
+    .ad-native .ad-cta {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+    
+    .controls {
+      margin: 20px 0;
+    }
+    
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background: #218838;
+    }
+    
+    .stats {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    
+    .stats h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📢 Ads Core - Basic Integration Example</h1>
+    <p>This example demonstrates basic ad integration using the Ads Core framework.</p>
+    
+    <div class="controls">
+      <button onclick="loadBannerAd()">Load Banner Ad</button>
+      <button onclick="loadNativeAd()">Load Native Ad</button>
+      <button onclick="showStats()">Show Stats</button>
+    </div>
+    
+    <div class="stats" id="stats" style="display: none;">
+      <h3>Statistics</h3>
+      <div id="stats-content"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Banner Ad Zone</h2>
+    <div class="ad-zone" id="banner-ad-zone">
+      <p>Banner ad will appear here</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Native Ad Zone</h2>
+    <div class="ad-zone" id="native-ad-zone">
+      <p>Native ad will appear here</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Content Section</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  </div>
+
+  <script src="../src/managers/AdManager.js"></script>
+  <script src="../src/analytics/AnalyticsTracker.js"></script>
+  
+  <script>
+    // Initialize Ad Manager
+    const adManager = new AdManager({
+      apiKey: 'demo-api-key',
+      publisherId: 'demo-publisher',
+      debug: true
+    });
+
+    // Initialize Analytics Tracker
+    const analytics = new AnalyticsTracker({
+      debug: true
+    });
+
+    // Load banner ad
+    async function loadBannerAd() {
+      console.log('Loading banner ad...');
+      
+      const ad = await adManager.showBanner({
+        container: '#banner-ad-zone',
+        size: '728x90',
+        zoneId: 'homepage-banner'
+      });
+      
+      if (ad) {
+        console.log('Banner ad loaded:', ad);
+      }
+    }
+
+    // Load native ad
+    async function loadNativeAd() {
+      console.log('Loading native ad...');
+      
+      const ad = await adManager.showNative({
+        container: '#native-ad-zone',
+        zoneId: 'content-native',
+        template: 'product-card'
+      });
+      
+      if (ad) {
+        console.log('Native ad loaded:', ad);
+      }
+    }
+
+    // Show statistics
+    function showStats() {
+      const statsDiv = document.getElementById('stats');
+      const statsContent = document.getElementById('stats-content');
+      
+      const sessionMetrics = analytics.getSessionMetrics();
+      
+      statsContent.innerHTML = `
+        <p><strong>Session ID:</strong> ${sessionMetrics.sessionId}</p>
+        <p><strong>Duration:</strong> ${Math.round(sessionMetrics.duration / 1000)}s</p>
+        <p><strong>Events in Queue:</strong> ${sessionMetrics.eventsCount}</p>
+        <p><strong>Active Ads:</strong> ${adManager.activeAds.size}</p>
+      `;
+      
+      statsDiv.style.display = 'block';
+    }
+
+    // Auto-load ads on page load
+    window.addEventListener('load', () => {
+      console.log('Page loaded, auto-loading ads...');
+      loadBannerAd();
+      setTimeout(() => loadNativeAd(), 1000);
+    });
+  </script>
+</body>
+</html>
