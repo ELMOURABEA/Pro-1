@@ -15,6 +15,15 @@ class AdPlacement {
    */
   setAdManager(adManager) {
     this.adManager = adManager;
+    
+    // Load any placements that were registered with autoLoad before adManager was set
+    for (const [zoneId, placement] of this.placements) {
+      if (placement.autoLoad && !placement.lazyLoad && !placement.loaded) {
+        this.loadAd(zoneId, adManager).catch(error => {
+          console.error(`Error loading deferred ad for zone ${zoneId}:`, error);
+        });
+      }
+    }
   }
 
   /**
@@ -87,8 +96,12 @@ class AdPlacement {
         size: placement.size
       });
 
-      if (ad && placement.refresh) {
-        this.scheduleRefresh(zoneId, adManager);
+      if (ad) {
+        placement.loaded = true;
+        
+        if (placement.refresh) {
+          this.scheduleRefresh(zoneId, adManager);
+        }
       }
 
       return ad;

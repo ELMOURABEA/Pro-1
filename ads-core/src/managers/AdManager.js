@@ -223,8 +223,10 @@ class AdManager {
       return;
     }
 
-    // Clear existing content
-    container.innerHTML = '';
+    // Clear existing content safely
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
 
     // Create ad element based on format
     const adElement = this.createAdElement(ad);
