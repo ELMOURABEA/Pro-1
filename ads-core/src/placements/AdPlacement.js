@@ -44,7 +44,10 @@ class AdPlacement {
     }
 
     if (config.autoLoad && !config.lazyLoad && this.adManager) {
-      this.loadAd(zoneId, this.adManager);
+      // Load ad asynchronously without blocking registration
+      this.loadAd(zoneId, this.adManager).catch(error => {
+        console.error(`Error auto-loading ad for zone ${zoneId}:`, error);
+      });
     }
   }
 
@@ -120,7 +123,9 @@ class AdPlacement {
           if (entry.isIntersecting && !placement.loaded) {
             placement.loaded = true;
             if (this.adManager) {
-              this.loadAd(zoneId, this.adManager);
+              this.loadAd(zoneId, this.adManager).catch(error => {
+                console.error(`Error lazy-loading ad for zone ${zoneId}:`, error);
+              });
             }
             observer.unobserve(entry.target);
           }

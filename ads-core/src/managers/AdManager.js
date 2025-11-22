@@ -248,39 +248,94 @@ class AdManager {
 
     switch (ad.format) {
       case 'banner':
-        element.innerHTML = `
-          <div class="ad-banner">
-            <img src="${ad.imageUrl}" alt="${ad.title}" />
-          </div>
-        `;
+        const bannerDiv = document.createElement('div');
+        bannerDiv.className = 'ad-banner';
+        
+        const bannerImg = document.createElement('img');
+        bannerImg.src = this.sanitizeUrl(ad.imageUrl);
+        bannerImg.alt = ad.title || 'Advertisement';
+        
+        bannerDiv.appendChild(bannerImg);
+        element.appendChild(bannerDiv);
         break;
 
       case 'native':
-        element.innerHTML = `
-          <div class="ad-native">
-            <img src="${ad.imageUrl}" alt="${ad.title}" class="ad-image" />
-            <h3 class="ad-title">${ad.title}</h3>
-            <p class="ad-description">${ad.description}</p>
-            <a href="${ad.clickUrl}" class="ad-cta">${ad.ctaText || 'Learn More'}</a>
-          </div>
-        `;
+        const nativeDiv = document.createElement('div');
+        nativeDiv.className = 'ad-native';
+        
+        const nativeImg = document.createElement('img');
+        nativeImg.src = this.sanitizeUrl(ad.imageUrl);
+        nativeImg.alt = ad.title || 'Advertisement';
+        nativeImg.className = 'ad-image';
+        
+        const title = document.createElement('h3');
+        title.className = 'ad-title';
+        title.textContent = ad.title || '';
+        
+        const description = document.createElement('p');
+        description.className = 'ad-description';
+        description.textContent = ad.description || '';
+        
+        const cta = document.createElement('a');
+        cta.href = this.sanitizeUrl(ad.clickUrl);
+        cta.className = 'ad-cta';
+        cta.textContent = ad.ctaText || 'Learn More';
+        cta.rel = 'noopener noreferrer';
+        cta.target = '_blank';
+        
+        nativeDiv.appendChild(nativeImg);
+        nativeDiv.appendChild(title);
+        nativeDiv.appendChild(description);
+        nativeDiv.appendChild(cta);
+        element.appendChild(nativeDiv);
         break;
 
       case 'video':
-        element.innerHTML = `
-          <div class="ad-video">
-            <video controls autoplay muted>
-              <source src="${ad.videoUrl}" type="video/mp4">
-            </video>
-          </div>
-        `;
+        const videoDiv = document.createElement('div');
+        videoDiv.className = 'ad-video';
+        
+        const video = document.createElement('video');
+        video.controls = true;
+        video.autoplay = true;
+        video.muted = true;
+        
+        const source = document.createElement('source');
+        source.src = this.sanitizeUrl(ad.videoUrl);
+        source.type = 'video/mp4';
+        
+        video.appendChild(source);
+        videoDiv.appendChild(video);
+        element.appendChild(videoDiv);
         break;
 
       default:
-        element.innerHTML = `<div class="ad-placeholder">Ad</div>`;
+        const placeholder = document.createElement('div');
+        placeholder.className = 'ad-placeholder';
+        placeholder.textContent = 'Ad';
+        element.appendChild(placeholder);
     }
 
     return element;
+  }
+
+  /**
+   * Sanitize URL to prevent XSS
+   */
+  sanitizeUrl(url) {
+    if (!url) return '#';
+    
+    // Only allow http, https, and relative URLs
+    const urlStr = String(url);
+    if (urlStr.match(/^(https?:)?\/\//i) || urlStr.match(/^\/[^\/]/)) {
+      return urlStr;
+    }
+    
+    // Block javascript: and data: URLs
+    if (urlStr.match(/^(javascript|data):/i)) {
+      return '#';
+    }
+    
+    return urlStr;
   }
 
   /**
