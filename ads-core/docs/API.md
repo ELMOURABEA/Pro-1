@@ -449,6 +449,19 @@ new AdPlacement(config)
 
 ### Methods
 
+#### setAdManager(adManager)
+
+Set the ad manager instance for the placement manager.
+
+```javascript
+placement.setAdManager(adManager)
+```
+
+**Parameters:**
+- `adManager` (AdManager) - Ad manager instance
+
+---
+
 #### register(zoneId, config)
 
 Register an ad placement zone.

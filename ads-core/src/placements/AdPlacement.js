@@ -7,6 +7,14 @@ class AdPlacement {
     this.config = config;
     this.placements = new Map();
     this.observers = new Map();
+    this.adManager = null;
+  }
+
+  /**
+   * Set the ad manager instance
+   */
+  setAdManager(adManager) {
+    this.adManager = adManager;
   }
 
   /**
@@ -35,8 +43,8 @@ class AdPlacement {
       this.setupLazyLoading(zoneId);
     }
 
-    if (config.autoLoad && !config.lazyLoad) {
-      this.loadAd(zoneId);
+    if (config.autoLoad && !config.lazyLoad && this.adManager) {
+      this.loadAd(zoneId, this.adManager);
     }
   }
 
@@ -111,7 +119,9 @@ class AdPlacement {
         entries.forEach(entry => {
           if (entry.isIntersecting && !placement.loaded) {
             placement.loaded = true;
-            this.loadAd(zoneId);
+            if (this.adManager) {
+              this.loadAd(zoneId, this.adManager);
+            }
             observer.unobserve(entry.target);
           }
         });
