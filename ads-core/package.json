@@ -1,0 +1,25 @@
+{
+  "name": "@most-pharma-gro/ads-core",
+  "version": "1.0.0",
+  "description": "Integrated advertising framework for MOST-PHARMA-GRO",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0",
+    "example": "npx serve examples"
+  },
+  "keywords": [
+    "advertising",
+    "ads",
+    "monetization",
+    "pharmacy",
+    "ecommerce"
+  ],
+  "author": "ELMOURABEA",
+  "license": "BSL-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ELMOURABEA/MOST-PHARMA-GRO.git"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
